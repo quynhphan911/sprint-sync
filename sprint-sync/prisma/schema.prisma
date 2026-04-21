@@ -1,0 +1,90 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model Team {
+  id        String   @id @default(uuid())
+  name      String
+  createdAt DateTime @default(now()) @map("created_at")
+  sprints   Sprint[]
+
+  @@map("teams")
+}
+
+model Sprint {
+  id           String        @id @default(uuid())
+  teamId       String        @map("team_id")
+  sprintNumber Int           @map("sprint_number")
+  goal         String?
+  status       String        @default("draft")
+  startDate    DateTime?     @map("start_date")
+  endDate      DateTime?     @map("end_date")
+  createdAt    DateTime      @default(now()) @map("created_at")
+  team         Team          @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  review       SprintReview?
+  retroBoard   RetroBoard?
+  actionItems  ActionItem[]
+
+  @@unique([teamId, sprintNumber])
+  @@index([teamId])
+  @@map("sprints")
+}
+
+model SprintReview {
+  id                  String   @id @default(uuid())
+  sprintId            String   @unique @map("sprint_id")
+  incrementNotes      String?  @db.Text @map("increment_notes")
+  stakeholderFeedback String?  @db.Text @map("stakeholder_feedback")
+  acceptedStories     Int?     @map("accepted_stories")
+  createdAt           DateTime @default(now()) @map("created_at")
+  sprint              Sprint   @relation(fields: [sprintId], references: [id], onDelete: Cascade)
+
+  @@map("sprint_reviews")
+}
+
+model RetroBoard {
+  id        String      @id @default(uuid())
+  sprintId  String      @unique @map("sprint_id")
+  status    String      @default("collecting")
+  createdAt DateTime    @default(now()) @map("created_at")
+  sprint    Sprint      @relation(fields: [sprintId], references: [id], onDelete: Cascade)
+  cards     RetroCard[]
+
+  @@index([sprintId])
+  @@map("retro_boards")
+}
+
+model RetroCard {
+  id        String     @id @default(uuid())
+  boardId   String     @map("board_id")
+  authorId  String?    @map("author_id")
+  category  String
+  content   String     @db.Text
+  votes     Int        @default(0)
+  createdAt DateTime   @default(now()) @map("created_at")
+  board     RetroBoard @relation(fields: [boardId], references: [id], onDelete: Cascade)
+
+  @@index([boardId])
+  @@index([boardId, category])
+  @@map("retro_cards")
+}
+
+model ActionItem {
+  id          String   @id @default(uuid())
+  sprintId    String   @map("sprint_id")
+  assigneeId  String?  @map("assignee_id")
+  description String   @db.Text
+  status      String   @default("todo")
+  createdAt   DateTime @default(now()) @map("created_at")
+  sprint      Sprint   @relation(fields: [sprintId], references: [id], onDelete: Cascade)
+
+  @@index([sprintId])
+  @@index([assigneeId])
+  @@map("action_items")
+}
