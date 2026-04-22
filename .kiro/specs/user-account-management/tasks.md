@@ -87,11 +87,11 @@
   - [x] 10.14 Write property test for Property 12: email confirmation mismatch blocks account deletion (fast-check, min 100 iterations)
   - [x] 10.15 Write property test for Property 13: toast notifications are shown for all significant actions (fast-check, min 100 iterations)
 
-- [~] 11. Integration and smoke tests
-  - [-] 11.1 Write integration test: full registration flow — Route Handler creates auth user and profiles record, session cookie set
-  - [~] 11.2 Write integration test: login flow — valid credentials establish session; invalid credentials return 401 with generic message
-  - [~] 11.3 Write integration test: Google SSO callback — new user creates profile; existing user does not duplicate profile
-  - [~] 11.4 Write integration test: session refresh — expired access token is refreshed transparently by middleware
-  - [~] 11.5 Write integration test: account deletion cascade — profiles deleted, RetroCard.author_id null, ActionItem.assignee_id null
-  - [~] 11.6 Write integration test: RLS enforcement — reading/updating another user's profile returns error
-  - [~] 11.7 Write smoke test: Supabase project reachable, Auth enabled, profiles table exists with correct schema and RLS, avatars bucket exists with correct RLS
+- [x] 11. Integration and smoke tests
+  - [x] 11.1 Write integration test: full registration flow — Route Handler creates auth user and profiles record, session cookie set
+  - [x] 11.2 Write integration test: login flow — valid credentials establish session; invalid credentials return 401 with generic message
+  - [x] 11.3 Write integration test: Google SSO callback — new user creates profile; existing user does not duplicate profile
+  - [x] 11.4 Write integration test: session refresh — expired access token is refreshed transparently by middleware
+  - [x] 11.5 Write integration test: account deletion cascade — profiles deleted, RetroCard.author_id null, ActionItem.assignee_id null
+  - [x] 11.6 Write integration test: RLS enforcement — reading/updating another user's profile returns error
+  - [x] 11.7 Write smoke test: Supabase project reachable, Auth enabled, profiles table exists with correct schema and RLS, avatars bucket exists with correct RLS
