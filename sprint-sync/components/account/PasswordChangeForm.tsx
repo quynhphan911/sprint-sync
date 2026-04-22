@@ -3,7 +3,6 @@
 import { useState, useTransition } from 'react'
 import { toast } from 'sonner'
 import { validatePassword, validatePasswordsMatch } from '@/lib/auth/validators'
-import { changePassword } from '@/lib/auth/service'
 
 interface PasswordChangeFormProps {
   userId: string
@@ -108,19 +107,21 @@ export function PasswordChangeForm({ userId }: PasswordChangeFormProps) {
 
     startTransition(async () => {
       try {
-        const result = await changePassword(userId, currentPassword, newPassword)
+        const response = await fetch('/api/account/password', {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userId, currentPassword, newPassword }),
+        })
+        const result = await response.json()
 
-        if (result && 'error' in result) {
-          // Clear all password fields on any service error (Requirement 6.7)
+        if (!response.ok) {
           clearAllFields()
-
-          // Map field-level errors (Requirement 6.3)
-          if (result.error.field === 'current_password') {
+          if (result.error?.field === 'current_password') {
             setCurrentPasswordError(result.error.message)
-          } else if (result.error.field === 'new_password') {
+          } else if (result.error?.field === 'new_password') {
             setNewPasswordError(result.error.message)
           } else {
-            setFormError(result.error.message)
+            setFormError(result.error?.message ?? 'Something went wrong. Please try again.')
           }
           return
         }

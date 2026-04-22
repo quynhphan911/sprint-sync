@@ -3,7 +3,6 @@
 import { useRef, useState, useTransition } from 'react'
 import { toast } from 'sonner'
 import { validateAvatarFile } from '@/lib/auth/validators'
-import { uploadAvatar } from '@/lib/auth/service'
 
 interface AvatarUploadProps {
   userId: string
@@ -62,11 +61,18 @@ export function AvatarUpload({ userId, currentAvatarUrl, displayName }: AvatarUp
     // Upload the file (Requirement 5.4)
     startTransition(async () => {
       try {
-        const result = await uploadAvatar(userId, file)
+        const formData = new FormData()
+        formData.append('file', file)
+        formData.append('userId', userId)
 
-        if (typeof result === 'object' && 'error' in result) {
-          setError(result.error.message)
-          // Revert preview on failure
+        const response = await fetch('/api/account/avatar', {
+          method: 'POST',
+          body: formData,
+        })
+        const result = await response.json()
+
+        if (!response.ok) {
+          setError(result.error?.message ?? 'Upload failed. Please try again.')
           setPreviewUrl(null)
           URL.revokeObjectURL(objectUrl)
           if (fileInputRef.current) fileInputRef.current.value = ''
@@ -74,7 +80,7 @@ export function AvatarUpload({ userId, currentAvatarUrl, displayName }: AvatarUp
         }
 
         // Success — update the stored avatar URL and show toast (Requirement 5.6)
-        setAvatarUrl(result)
+        setAvatarUrl(result.data?.avatar_url ?? displayedUrl)
         // Keep the preview URL for immediate display; revoke the object URL
         // once the stored URL is set to avoid memory leaks
         URL.revokeObjectURL(objectUrl)

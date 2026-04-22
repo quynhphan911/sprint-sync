@@ -27,7 +27,7 @@ import { validateDisplayName } from '@/lib/auth/validators'
 export async function PATCH(request: NextRequest) {
   try {
     // Verify the user is authenticated via Supabase SSR session
-    const supabase = createServerClient()
+    const supabase = await createServerClient()
     const { data: { user }, error: authError } = await supabase.auth.getUser()
 
     if (authError || !user) {

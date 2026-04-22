@@ -76,7 +76,7 @@ export async function registerWithEmail(
   // Sanitise display name before persistence
   const sanitisedDisplayName = sanitiseDisplayName(displayName)
 
-  const supabase = createServerClient()
+  const supabase = await createServerClient()
 
   // Create Supabase Auth user
   const { data: authData, error: authError } = await supabase.auth.signUp({
@@ -181,7 +181,7 @@ export async function loginWithEmail(
     }
   }
 
-  const supabase = createServerClient()
+  const supabase = await createServerClient()
 
   const { data, error } = await supabase.auth.signInWithPassword({
     email,
@@ -226,7 +226,7 @@ export async function loginWithEmail(
  * Validates: Requirements 3.1, 3.2
  */
 export async function initiateGoogleSSO(): Promise<{ url: string } | { error: AuthError }> {
-  const supabase = createServerClient()
+  const supabase = await createServerClient()
 
   // Get the base URL for the callback (defaults to localhost in development)
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
@@ -260,7 +260,7 @@ export async function initiateGoogleSSO(): Promise<{ url: string } | { error: Au
  * Validates: Requirements 4.5, 4.6
  */
 export async function logout(): Promise<void> {
-  const supabase = createServerClient()
+  const supabase = await createServerClient()
   await supabase.auth.signOut()
 }
 
@@ -274,7 +274,7 @@ export async function logout(): Promise<void> {
  * Validates: Requirements 5.1, 5.8
  */
 export async function getProfile(userId: string): Promise<Profile | { error: AuthError }> {
-  const supabase = createServerClient()
+  const supabase = await createServerClient()
 
   const { data, error } = await supabase
     .from('profiles')
@@ -323,7 +323,7 @@ export async function updateProfile(
     }
   }
 
-  const supabase = createServerClient()
+  const supabase = await createServerClient()
 
   // Prepare update data with sanitised display name
   const updateData: ProfileUpdateData = {}
@@ -378,7 +378,7 @@ export async function uploadAvatar(
     }
   }
 
-  const supabase = createServerClient()
+  const supabase = await createServerClient()
 
   // Generate unique filename
   const fileExt = file.name.split('.').pop()
@@ -435,7 +435,7 @@ export async function changePassword(
     }
   }
 
-  const supabase = createServerClient()
+  const supabase = await createServerClient()
 
   // Get current user email for re-authentication
   const { data: userData } = await supabase.auth.getUser()
@@ -497,7 +497,7 @@ export async function requestPasswordReset(email: string): Promise<void | { erro
     }
   }
 
-  const supabase = createServerClient()
+  const supabase = await createServerClient()
 
   // Get the base URL for the callback (defaults to localhost in development)
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
@@ -528,7 +528,7 @@ export async function completePasswordReset(
     }
   }
 
-  const supabase = createServerClient()
+  const supabase = await createServerClient()
 
   // Update password using the session established by the reset token
   const { error } = await supabase.auth.updateUser({
@@ -566,7 +566,7 @@ export async function completePasswordReset(
  * Validates: Requirements 8.3, 8.4, 8.5, 8.6, 8.7
  */
 export async function deleteAccount(userId: string): Promise<void | { error: AuthError }> {
-  const supabase = createServerClient()
+  const supabase = await createServerClient()
 
   // Verify the user is authenticated
   const { data: userData } = await supabase.auth.getUser()

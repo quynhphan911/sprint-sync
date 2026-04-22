@@ -16,7 +16,7 @@ import { AvatarUpload } from '@/components/account/AvatarUpload'
  * Validates: Requirements 5.1, 5.8
  */
 export default async function ProfilePage() {
-  const supabase = createServerClient()
+  const supabase = await createServerClient()
 
   const {
     data: { user },

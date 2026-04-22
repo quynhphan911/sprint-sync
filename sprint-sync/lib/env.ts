@@ -22,6 +22,4 @@ function requireEnv(key: string): string {
 export const env = {
   NEXT_PUBLIC_SUPABASE_URL: requireEnv('NEXT_PUBLIC_SUPABASE_URL'),
   NEXT_PUBLIC_SUPABASE_ANON_KEY: requireEnv('NEXT_PUBLIC_SUPABASE_ANON_KEY'),
-  DATABASE_URL: requireEnv('DATABASE_URL'),
-  DIRECT_URL: requireEnv('DIRECT_URL'),
 } as const

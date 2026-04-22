@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { Suspense, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { RegisterForm } from '@/components/auth/RegisterForm'
 import { LoginForm } from '@/components/auth/LoginForm'
@@ -9,14 +9,10 @@ import { GoogleSSOButton } from '@/components/auth/GoogleSSOButton'
 /**
  * Auth_Page — Authentication page with toggle between login and registration.
  *
- * This Client Component manages the toggle state between Login_Form and
- * Register_Form, and conditionally renders the Google SSO button based on
- * configuration. It preserves redirect parameters from the URL to enable
- * post-authentication navigation to the originally requested page.
- *
  * Validates: Requirements 1.1, 2.1, 2.7, 2.8, 3.1, 10.1, 10.5
  */
-export default function AuthPage() {
+
+function AuthContent() {
   const [mode, setMode] = useState<'login' | 'register'>('login')
   const searchParams = useSearchParams()
   const redirectTo = searchParams.get('redirect') || '/teams'
@@ -25,9 +21,7 @@ export default function AuthPage() {
   return (
     <main className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="w-full max-w-md">
-        {/* Card container */}
         <div className="rounded-lg border bg-card p-8 shadow-sm">
-          {/* Header */}
           <div className="mb-6 text-center">
             <h1 className="text-2xl font-semibold text-foreground">
               {mode === 'login' ? 'Sign in to SprintSync' : 'Create your account'}
@@ -39,7 +33,6 @@ export default function AuthPage() {
             </p>
           </div>
 
-          {/* OAuth error message */}
           {oauthError && (
             <div
               role="alert"
@@ -49,7 +42,6 @@ export default function AuthPage() {
             </div>
           )}
 
-          {/* Toggle between login and register */}
           <div className="mb-6 flex gap-2 rounded-md bg-muted p-1">
             <button
               type="button"
@@ -75,28 +67,23 @@ export default function AuthPage() {
             </button>
           </div>
 
-          {/* Conditional form rendering */}
           {mode === 'login' ? (
             <LoginForm redirectTo={redirectTo} />
           ) : (
             <RegisterForm redirectTo={redirectTo} />
           )}
 
-          {/* Google SSO Button — only rendered when Google SSO is enabled in config */}
           {process.env.NEXT_PUBLIC_GOOGLE_SSO_ENABLED === 'true' && (
             <>
-              {/* Divider */}
               <div className="my-6 flex items-center gap-4">
                 <div className="h-px flex-1 bg-border" />
                 <span className="text-xs text-muted-foreground">OR</span>
                 <div className="h-px flex-1 bg-border" />
               </div>
-
               <GoogleSSOButton redirectTo={redirectTo} />
             </>
           )}
 
-          {/* Password reset link (only shown in login mode) */}
           {mode === 'login' && (
             <div className="mt-4 text-center">
               <a
@@ -109,11 +96,22 @@ export default function AuthPage() {
           )}
         </div>
 
-        {/* Footer note */}
         <p className="mt-4 text-center text-xs text-muted-foreground">
           By continuing, you agree to SprintSync&apos;s terms of service and privacy policy.
         </p>
       </div>
     </main>
+  )
+}
+
+export default function AuthPage() {
+  return (
+    <Suspense fallback={
+      <main className="flex min-h-screen items-center justify-center bg-background px-4">
+        <div className="text-muted-foreground">Loading...</div>
+      </main>
+    }>
+      <AuthContent />
+    </Suspense>
   )
 }

@@ -12,7 +12,7 @@ import { TeamsPageClient } from './TeamsPageClient'
  * Validates: Requirements 8.1, 8.2, 8.7, 8.9
  */
 export default async function TeamsPage() {
-  const supabase = createServerClient()
+  const supabase = await createServerClient()
 
   const {
     data: { user },

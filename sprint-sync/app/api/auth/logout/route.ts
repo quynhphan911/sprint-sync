@@ -25,7 +25,7 @@ export async function POST(_request: NextRequest) {
   try {
     // Verify the caller is authenticated before performing any mutation.
     // Uses the Supabase server client so the session is read from SSR cookies.
-    const supabase = createServerClient()
+    const supabase = await createServerClient()
     const {
       data: { user },
     } = await supabase.auth.getUser()

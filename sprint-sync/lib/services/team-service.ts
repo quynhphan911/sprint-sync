@@ -19,7 +19,7 @@ export async function inviteUserToTeam(
   email: string,
   requestingUserId: string
 ): Promise<void | { error: TeamServiceError }> {
-  const supabase = createServerClient()
+  const supabase = await createServerClient()
 
   // 1. Verify requesting user is a facilitator
   const { data: membership, error: membershipError } = await supabase
@@ -105,7 +105,7 @@ export async function inviteUserToTeam(
  * Validates: Requirements 8.1, 8.9
  */
 export async function getTeamsForUser(userId: string): Promise<TeamWithRole[]> {
-  const supabase = createServerClient()
+  const supabase = await createServerClient()
 
   const { data, error } = await supabase
     .from('team_members')
@@ -117,7 +117,7 @@ export async function getTeamsForUser(userId: string): Promise<TeamWithRole[]> {
   }
 
   return (data ?? []).map((row) => ({
-    ...(row.teams as { id: string; name: string; created_at: string }),
+    ...(row.teams as unknown as { id: string; name: string; created_at: string }),
     role: row.role as 'facilitator' | 'member',
   }))
 }
@@ -157,7 +157,7 @@ export async function createTeam(
     }
   }
 
-  const supabase = createServerClient()
+  const supabase = await createServerClient()
 
   const { data: team, error: teamError } = await supabase
     .from('teams')

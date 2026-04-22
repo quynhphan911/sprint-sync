@@ -2,7 +2,6 @@
 
 import { useState, useTransition, useRef, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { deleteAccount } from '@/lib/auth/service'
 
 interface DeleteAccountDialogProps {
   userId: string
@@ -95,11 +94,14 @@ export function DeleteAccountDialog({ userId, userEmail }: DeleteAccountDialogPr
 
     startTransition(async () => {
       try {
-        const result = await deleteAccount(userId)
+        const response = await fetch('/api/account/delete', {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+        })
+        const result = await response.json()
 
-        if (result && 'error' in result) {
-          // Service returned a structured error — Requirement 8.7
-          setFormError(result.error.message || 'Failed to delete account. Please try again.')
+        if (!response.ok) {
+          setFormError(result.error?.message || 'Failed to delete account. Please try again.')
           return
         }
 

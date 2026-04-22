@@ -35,7 +35,7 @@ export default async function ConfirmPage({
 
   // Exchange code for session
   if (code) {
-    const supabase = createServerClient()
+    const supabase = await createServerClient()
     const { data, error: exchangeError } = await supabase.auth.exchangeCodeForSession(code)
 
     if (exchangeError) {

@@ -3,7 +3,6 @@
 import { useState, useTransition } from 'react'
 import { toast } from 'sonner'
 import { validateDisplayName } from '@/lib/auth/validators'
-import { updateProfile } from '@/lib/auth/service'
 import type { Profile } from '@/types/auth'
 
 interface ProfileFormProps {
@@ -55,14 +54,18 @@ export function ProfileForm({ profile, userId }: ProfileFormProps) {
 
     startTransition(async () => {
       try {
-        const result = await updateProfile(userId, { display_name: displayName })
+        const response = await fetch('/api/account/profile', {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userId, display_name: displayName }),
+        })
+        const result = await response.json()
 
-        if ('error' in result) {
-          // Service returned a structured error — retain entered data (Requirement 5.7)
-          if (result.error.field === 'display_name') {
+        if (!response.ok) {
+          if (result.error?.field === 'display_name') {
             setFieldError(result.error.message)
           } else {
-            setFormError(result.error.message)
+            setFormError(result.error?.message ?? 'Something went wrong. Please try again.')
           }
           return
         }

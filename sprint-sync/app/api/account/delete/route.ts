@@ -21,7 +21,7 @@ import { deleteAccount } from '@/lib/auth/service'
 export async function DELETE() {
   try {
     // Verify the user is authenticated via Supabase SSR session
-    const supabase = createServerClient()
+    const supabase = await createServerClient()
     const {
       data: { user },
       error: authError,

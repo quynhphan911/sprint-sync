@@ -12,7 +12,7 @@ import type { TeamWithRole, TeamServiceError } from '@/types/team'
 export async function createTeamAction(
   name: string
 ): Promise<{ team: TeamWithRole } | { error: TeamServiceError }> {
-  const supabase = createServerClient()
+  const supabase = await createServerClient()
 
   const {
     data: { user },

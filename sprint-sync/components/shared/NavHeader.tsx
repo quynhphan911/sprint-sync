@@ -4,7 +4,6 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import { LogOut } from 'lucide-react'
-import { logout } from '@/lib/auth/service'
 import type { Profile } from '@/types/auth'
 
 /**
@@ -43,7 +42,7 @@ export function NavHeader({ user, profile }: NavHeaderProps) {
     if (isLoggingOut) return
     setIsLoggingOut(true)
     try {
-      await logout()
+      await fetch('/api/auth/logout', { method: 'POST' })
       toast.success('You have been logged out successfully.')
       router.push('/auth')
       router.refresh()

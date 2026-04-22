@@ -19,7 +19,7 @@ import { DeleteAccountDialog } from '@/components/account/DeleteAccountDialog'
  * Validates: Requirements 6.1, 6.8, 8.1
  */
 export default async function AccountSettingsPage() {
-  const supabase = createServerClient()
+  const supabase = await createServerClient()
 
   const {
     data: { user },

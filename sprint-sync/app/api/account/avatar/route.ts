@@ -24,7 +24,7 @@ import { validateAvatarFile } from '@/lib/auth/validators'
 export async function POST(request: NextRequest) {
   try {
     // Verify the user is authenticated via Supabase SSR session
-    const supabase = createServerClient()
+    const supabase = await createServerClient()
     const {
       data: { user },
       error: authError,

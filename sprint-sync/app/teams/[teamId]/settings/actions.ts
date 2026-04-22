@@ -16,7 +16,7 @@ export async function inviteUserAction(
   teamId: string,
   email: string
 ): Promise<{ success: true } | { error: TeamServiceError }> {
-  const supabase = createServerClient()
+  const supabase = await createServerClient()
 
   const {
     data: { user },

@@ -4,7 +4,7 @@ import { getTeamsForUser } from '@/lib/services/team-service'
 import { InviteMemberForm } from '@/components/teams/InviteMemberForm'
 
 interface TeamSettingsPageProps {
-  params: { teamId: string }
+  params: Promise<{ teamId: string }>
 }
 
 /**
@@ -18,9 +18,9 @@ interface TeamSettingsPageProps {
  * Validates: Requirement 9.1
  */
 export default async function TeamSettingsPage({ params }: TeamSettingsPageProps) {
-  const { teamId } = params
+  const { teamId } = await params
 
-  const supabase = createServerClient()
+  const supabase = await createServerClient()
 
   // 1. Verify authentication
   const {

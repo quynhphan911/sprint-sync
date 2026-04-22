@@ -18,7 +18,7 @@ export default async function ProtectedLayout({
 }: {
   children: React.ReactNode
 }) {
-  const supabase = createServerClient()
+  const supabase = await createServerClient()
 
   // Validate session server-side — getUser() verifies the JWT with Supabase
   // Auth rather than trusting the cookie value alone.
