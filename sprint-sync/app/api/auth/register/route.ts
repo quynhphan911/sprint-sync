@@ -23,7 +23,9 @@ import { registerWithEmail } from '@/lib/auth/service'
  */
 export async function POST(request: NextRequest) {
   try {
+    console.log('[register] Starting registration...')
     const body = await request.json()
+    console.log('[register] Body parsed:', { email: body.email, displayName: body.displayName })
     const { email, password, displayName } = body
 
     // Validate that all required fields are present before calling the service.
@@ -43,7 +45,9 @@ export async function POST(request: NextRequest) {
 
     // Delegate to Auth_Service — handles validation, Supabase Auth user
     // creation, profiles record insertion, and session cookie setup.
+    console.log('[register] Calling registerWithEmail...')
     const result = await registerWithEmail(email, password, displayName)
+    console.log('[register] registerWithEmail returned:', 'error' in result ? 'error' : 'success')
 
     if ('error' in result) {
       // Map AuthErrorCode to the appropriate HTTP status code.

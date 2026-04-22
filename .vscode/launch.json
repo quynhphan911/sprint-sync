@@ -1,0 +1,10 @@
+{
+    "configurations": [
+        {
+            "type": "chrome",
+            "name": "http://localhost:3001/auth?redirect=%2Fteams",
+            "request": "launch",
+            "url": "http://localhost:3001/auth?redirect=%2Fteams"
+        }
+    ]
+}

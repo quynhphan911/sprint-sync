@@ -76,7 +76,9 @@ export async function registerWithEmail(
   // Sanitise display name before persistence
   const sanitisedDisplayName = sanitiseDisplayName(displayName)
 
+  console.log('[service] Creating server client...')
   const supabase = await createServerClient()
+  console.log('[service] Server client created, calling signUp...')
 
   // Create Supabase Auth user
   const { data: authData, error: authError } = await supabase.auth.signUp({
@@ -88,6 +90,7 @@ export async function registerWithEmail(
       },
     },
   })
+  console.log('[service] signUp returned, error:', authError?.message ?? 'none', 'user:', authData?.user?.id ?? 'null', 'session:', authData?.session ? 'yes' : 'null')
 
   if (authError) {
     // Map Supabase error to AuthError
