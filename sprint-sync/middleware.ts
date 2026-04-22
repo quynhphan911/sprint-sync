@@ -34,6 +34,9 @@ export async function middleware(request: NextRequest) {
   )
 
   // Refresh session — do not remove this call
+  // The getUser() call automatically exchanges the refresh token for a new access token
+  // if the current access token is expired. The updated tokens are written back to cookies
+  // via the setAll callback above, ensuring seamless session persistence.
   const {
     data: { user },
   } = await supabase.auth.getUser()
@@ -63,11 +66,12 @@ export const config = {
     /*
      * Match all request paths except:
      * - _next/static (static files)
-     * - _next/image (image optimisation)
-     * - favicon.ico
-     * - api/auth (auth API routes)
-     * - public assets (images, fonts, etc.)
+     * - _next/image (image optimization files)
+     * - _next/data (data fetching files)
+     * - favicon.ico, sitemap.xml, robots.txt (metadata files)
+     * - api/* (API routes handle auth internally)
+     * - Static assets with file extensions (images, fonts, etc.)
      */
-    '/((?!_next/static|_next/image|favicon.ico|api/auth|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+    '/((?!_next/static|_next/image|_next/data|favicon.ico|sitemap.xml|robots.txt|api/|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|woff|woff2|ttf|eot|otf)$).*)',
   ],
 }

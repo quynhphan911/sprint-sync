@@ -174,3 +174,75 @@ $$;
 -- Revoke public execute and grant only to authenticated users
 REVOKE EXECUTE ON FUNCTION get_user_id_by_email(text) FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION get_user_id_by_email(text) TO authenticated;
+
+-- ---------------------------------------------------------------------------
+-- RPC: delete_user
+--
+-- Deletes the authenticated user's account from auth.users.
+-- This cascades to delete the profiles record and nullify author_id and
+-- assignee_id on retro_cards and action_items respectively.
+-- Only callable by authenticated users, and only for their own account.
+-- ---------------------------------------------------------------------------
+CREATE OR REPLACE FUNCTION delete_user()
+RETURNS void
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+BEGIN
+  -- Only allow users to delete their own account
+  IF auth.uid() IS NULL THEN
+    RAISE EXCEPTION 'Not authenticated';
+  END IF;
+
+  -- Delete from auth.users (cascades to profiles, nullifies FKs)
+  DELETE FROM auth.users WHERE id = auth.uid();
+END;
+$$;
+
+-- Revoke public execute and grant only to authenticated users
+REVOKE EXECUTE ON FUNCTION delete_user() FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION delete_user() TO authenticated;
+
+-- ---------------------------------------------------------------------------
+-- avatars storage bucket
+-- ---------------------------------------------------------------------------
+INSERT INTO storage.buckets (id, name, public)
+VALUES ('avatars', 'avatars', true)
+ON CONFLICT (id) DO NOTHING;
+
+-- Only the owning user may upload/replace their avatar
+CREATE POLICY "avatars_upload_own"
+  ON storage.objects FOR INSERT
+  WITH CHECK (
+    bucket_id = 'avatars' AND
+    auth.uid()::text = (storage.foldername(name))[1]
+  );
+
+CREATE POLICY "avatars_update_own"
+  ON storage.objects FOR UPDATE
+  USING (
+    bucket_id = 'avatars' AND
+    auth.uid()::text = (storage.foldername(name))[1]
+  );
+
+-- Public read for avatar display
+CREATE POLICY "avatars_public_read"
+  ON storage.objects FOR SELECT
+  USING (bucket_id = 'avatars');
+
+-- ---------------------------------------------------------------------------
+-- ON DELETE SET NULL FK constraints for account deletion cascade
+-- ---------------------------------------------------------------------------
+-- These ensure that when a user is deleted, their authored retro cards and
+-- assigned action items retain their content but lose personal attribution.
+
+ALTER TABLE retro_cards
+  DROP CONSTRAINT IF EXISTS retro_cards_author_id_fkey,
+  ADD CONSTRAINT retro_cards_author_id_fkey
+    FOREIGN KEY (author_id) REFERENCES auth.users(id) ON DELETE SET NULL;
+
+ALTER TABLE action_items
+  DROP CONSTRAINT IF EXISTS action_items_assignee_id_fkey,
+  ADD CONSTRAINT action_items_assignee_id_fkey
+    FOREIGN KEY (assignee_id) REFERENCES auth.users(id) ON DELETE SET NULL;
