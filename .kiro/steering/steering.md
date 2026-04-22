@@ -87,7 +87,7 @@ Set up the foundational infrastructure for SprintSync, including the Next.js pro
 2. Add the following required keys (leave values blank for me to fill in):
    * `NEXT_PUBLIC_SUPABASE_URL=https://npcsdackcnhgpxfxmceo.supabase.co`
    * `NEXT_PUBLIC_SUPABASE_ANON_KEY=sb_publishable_33vcjK4qLNNHNzBRbFN2Bw_bOhnyTYB`
-   * `DATABASE_URL=postgresql://postgres:[Gi@han20_Nov_2019]@db.npcsdackcnhgpxfxmceo.supabase.co:5432/postgres` (For Prisma connection pooling)
+   * `DATABASE_URL=postgresql://postgres:%5BGi%40han20_Nov_2019%5D@db.npcsdackcnhgpxfxmceo.supabase.co:5432/postgres` (For Prisma connection pooling)
    * `DIRECT_URL=postgresql://postgres:[Gi@han20_Nov_2019]@db.npcsdackcnhgpxfxmceo.supabase.co:6543/postgres` (For Prisma migrations)
 
 ### Step 3: Prisma Schema Definition
