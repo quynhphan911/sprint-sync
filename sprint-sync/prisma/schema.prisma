@@ -21,10 +21,10 @@ model Sprint {
   id           String        @id @default(uuid())
   teamId       String        @map("team_id")
   sprintNumber Int           @map("sprint_number")
-  goal         String?
-  status       String        @default("draft")
-  startDate    DateTime?     @map("start_date")
-  endDate      DateTime?     @map("end_date")
+  goal         String
+  status       String        @default("active")
+  startDate    DateTime      @map("start_date") @db.Date
+  endDate      DateTime      @map("end_date") @db.Date
   createdAt    DateTime      @default(now()) @map("created_at")
   team         Team          @relation(fields: [teamId], references: [id], onDelete: Cascade)
   review       SprintReview?
@@ -37,13 +37,13 @@ model Sprint {
 }
 
 model SprintReview {
-  id                  String   @id @default(uuid())
-  sprintId            String   @unique @map("sprint_id")
-  incrementNotes      String?  @db.Text @map("increment_notes")
-  stakeholderFeedback String?  @db.Text @map("stakeholder_feedback")
-  acceptedStories     Int?     @map("accepted_stories")
-  createdAt           DateTime @default(now()) @map("created_at")
-  sprint              Sprint   @relation(fields: [sprintId], references: [id], onDelete: Cascade)
+  id                   String   @id @default(uuid())
+  sprintId             String   @unique @map("sprint_id")
+  incrementNotes       String   @db.Text @map("increment_notes")
+  stakeholderFeedback  String?  @db.Text @map("stakeholder_feedback")
+  acceptedStoriesCount Int      @map("accepted_stories_count")
+  createdAt            DateTime @default(now()) @map("created_at")
+  sprint               Sprint   @relation(fields: [sprintId], references: [id], onDelete: Cascade)
 
   @@map("sprint_reviews")
 }
