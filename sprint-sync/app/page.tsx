@@ -1,15 +1,12 @@
 import { redirect } from 'next/navigation'
-import { createServerClient } from '@/lib/supabase/server'
 
-export default async function RootPage() {
-  const supabase = await createServerClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-
-  if (user) {
-    redirect('/teams')
-  } else {
-    redirect('/auth')
-  }
+/**
+ * Root page — redirects to /auth.
+ *
+ * The middleware handles the rest:
+ * - If authenticated, middleware redirects /auth → /teams
+ * - If unauthenticated, user lands on /auth to log in
+ */
+export default function RootPage() {
+  redirect('/auth')
 }
